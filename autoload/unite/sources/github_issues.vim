@@ -2,8 +2,9 @@ scriptencoding utf-8
 let s:save_cpo = &cpo
 set cpo&vim
 
-let s:HTTP = vital#of("unite_github").import("Web.HTTP")
-let s:JSON = marching#vital().import("Web.JSON")
+let s:V = vital#of("unite_github")
+let s:HTTP = s:V.import("Web.HTTP")
+let s:JSON = s:V.import("Web.JSON")
 
 function! s:get_github(request_url, ...)
 	let data = get(a:, 1, {})
