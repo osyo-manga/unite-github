@@ -9,6 +9,9 @@
 ```vim
 " github/issues:{accunt}/{repos}
 :Unite github/issues:osyo-manga/unite-github
+
+" request setting
+let g:unite#sources#github_issues#default_request = { "per_page" : 100 }
 ```
 
 

@@ -19,9 +19,10 @@ function! s:issues(user, repos, ...)
 	return s:get_github(request_url, data)
 endfunction
 
+let g:unite#sources#github_issues#default_request = get(g:, "unite#sources#github_issues#default_request", {})
 
 function! s:issues_all(user, repos, ...)
-	let data = extend({ "state" : "all", "per_page" : 100 }, get(a:, 1, {}))
+	let data = extend(extend({ "state" : "all", "per_page" : 30 }, g:unite#sources#github_issues#default_request), get(a:, 1, {}))
 	return s:issues(a:user, a:repos, data)
 endfunction
 
@@ -78,14 +79,14 @@ function! s:source.async_gather_candidates(args, context)
 
 	let a:context.is_async = 0
 	let content = s:JSON.decode(self.source__response.get().content)
-	let pagination = [{
+	let pager = [{
 \		"word" : "[next page]",
 \		"kind" : "source",
 \		"action__source_name" : "github/issues",
 \		"action__source_args" : [a:args[0], self.page + 1],
 \	}]
 	if self.page > 1
-		let pagination += [{
+		let pager += [{
 \			"word" : "[prev page]",
 \			"kind" : "source",
 \			"action__source_name" : "github/issues",
@@ -97,7 +98,7 @@ function! s:source.async_gather_candidates(args, context)
 \		"action__path" : v:val.html_url,
 \		"kind" : "uri",
 \		"default_action" : "start",
-\	}') + pagination
+\	}') + pager
 endfunction
 
 
