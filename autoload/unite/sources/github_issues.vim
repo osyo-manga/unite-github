@@ -46,7 +46,8 @@ function! s:source.hooks.on_init(args, context)
 		return unite#print_source_message("Plase input argument.\ne.g. :Unite github/issues:osyo-manga/vim-over", "github/issues")
 	endif
 	let parsed = matchlist(a:args[0], pat)
-	let self.parent.source__response = s:issues_all(parsed[1], parsed[2])
+	let self.parent.page = get(a:args, 1, 1)
+	let self.parent.source__response = s:issues_all(parsed[1], parsed[2], { "page" : self.parent.page })
 	let self.parent.count = 0
 endfunction
 
@@ -77,12 +78,26 @@ function! s:source.async_gather_candidates(args, context)
 
 	let a:context.is_async = 0
 	let content = s:JSON.decode(self.source__response.get().content)
+	let pagination = [{
+\		"word" : "[next page]",
+\		"kind" : "source",
+\		"action__source_name" : "github/issues",
+\		"action__source_args" : [a:args[0], self.page + 1],
+\	}]
+	if self.page > 1
+		let pagination += [{
+\			"word" : "[prev page]",
+\			"kind" : "source",
+\			"action__source_name" : "github/issues",
+\			"action__source_args" : [a:args[0], self.page - 1],
+\		}]
+	endif
 	return map(content, '{
 \		"word" : (v:val.state == "open" ? "* " : "  ") .  "#" . v:val.number . " " . v:val.title,
 \		"action__path" : v:val.html_url,
 \		"kind" : "uri",
 \		"default_action" : "start",
-\	}')
+\	}') + pagination
 endfunction
 
 
