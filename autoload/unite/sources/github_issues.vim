@@ -47,7 +47,7 @@ function! s:source.hooks.on_init(args, context)
 		return unite#print_source_message("Plase input argument.\ne.g. :Unite github/issues:osyo-manga/vim-over", "github/issues")
 	endif
 	let parsed = matchlist(a:args[0], pat)
-	let self.parent.page = get(a:args, 1, 1)
+	let self.parent.page = get(a:args, 1, get(g:unite#sources#github_issues#default_request, "page", 1))
 	let self.parent.source__response = s:issues_all(parsed[1], parsed[2], { "page" : self.parent.page })
 	let self.parent.count = 0
 endfunction
